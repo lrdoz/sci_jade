@@ -13,7 +13,7 @@ import jade.core.Agent;
 public class CountArm extends Agent {
 
 	/**
-	 * 
+	 * Id unique de la class
 	 */
 	private static final long serialVersionUID = -3201016871478557595L;
 	

@@ -3,23 +3,22 @@
  */
 package fil.sci.rebours;
 
-import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
-import jade.util.leap.Iterator;
+import jade.util.Logger;
 
 /**
- * Class définie un agent qui affiche un message toute les 5 seconds
+ * Class définit un agent qui déclenche une bombe
  * 
  * @author SAUVAGE Celestine - HALABI Sami
  */
 public class CountBehaviour extends CyclicBehaviour {
-	
-	/**
-	 * 
-	 */
+	 Logger logger = jade.util.Logger.getMyLogger(this.getClass().getName()); 
+	 
+		/**
+		 * Id unique de la class
+		 */
 	private static final long serialVersionUID = 205596621055946442L;
 	
 	//Constructor
@@ -34,26 +33,24 @@ public class CountBehaviour extends CyclicBehaviour {
 	public void action() {
 		ACLMessage message = this.myAgent.receive();
 		if(message != null) {
-			ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
+			logger.log(Logger.INFO,String.format("[Agent][%s] Receive Message", this.myAgent.getName()));
 			
-			if(ACLMessage.REQUEST == message.getPerformative()) {
-				Iterator replyTo = message.getAllReplyTo();
-				while(replyTo.hasNext())
-					reply.addReceiver((AID) replyTo.next());
-			}
-			else if(ACLMessage.INFORM == message.getPerformative())
-				reply.addReceiver(reply.getSender());
-
+			ACLMessage response = message.createReply();
+			response.setPerformative(ACLMessage.INFORM);
 			
 			String myMessage = message.getContent();
-		
 			//Time est fini
 			if(myMessage.equals("0")) {
-				System.out.println("[Agent] BOOM");
+				logger.log(Logger.INFO,String.format("[Agent][%s] Boom", this.myAgent.getName()));
 				return;
 			}
-			reply.setContent(Integer.toString((Integer.parseInt(myMessage)-1)));
-			this.myAgent.send(reply);
-			}
+			try{
+				response.setContent(Integer.toString((Integer.parseInt(myMessage)-1)));
+				this.myAgent.send(response);
+				logger.log(Logger.INFO,String.format("[Agent][%s] Message send", this.myAgent.getName()));
+		    }catch(NumberFormatException e){
+				logger.log(Logger.WARNING,String.format("[Agent][%s] Le message n'est pas une bombe", this.myAgent.getName()));
+		    }
 		}
+	}
 }

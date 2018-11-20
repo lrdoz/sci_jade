@@ -3,14 +3,14 @@ package fil.sci.timer;
 import jade.core.Agent;
 
 /**
- * Class définie un agent qui affiche un message toute les 5 seconds
+ * Class définit un agent qui affiche un message toute les 5 seconds
  * 
  * @author SAUVAGE Celestine - HALABI Sami
  */
 public class Bob extends Agent {
 
 	/**
-	 * Serialisation de class
+	 * Id unique de la class
 	 */
 	private static final long serialVersionUID = 3714589918558831764L;
 
@@ -19,8 +19,9 @@ public class Bob extends Agent {
 	 */
 	@Override
 	protected void setup() {
+	  	System.out.println("[AGENTS] Coucou je viens de commencer à être initialisé\n");
+
 		//Récupération des argument
-		
 		Integer timer = new Integer("0");
 		
 		Object[] args = getArguments();
@@ -29,15 +30,6 @@ public class Bob extends Agent {
 		if(args != null && args.length > 0) 
 			timer = new Integer((String) args[0]);
 		
-	  	System.out.println("[AGENTS] Coucou je viens de commencer à être initialisé\n");
-	  	
-		try {
-			while(true) {
-				Thread.sleep(timer);
-				System.out.println("[AGENTS] Hello World! My name is "+getLocalName());
-			}
-		} catch (InterruptedException e) {
-			throw new IllegalStateException("[AGENTS] Problème lors de l'éxécution du timer");
-		}
+		this.addBehaviour(new BobBehaviour(this, timer.longValue()));
 	} 
 }

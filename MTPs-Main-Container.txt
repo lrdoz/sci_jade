@@ -1,1 +1,1 @@
-http://b04p4.fil.univ-lille1.fr:7778/acc
+http://b04p15.fil.univ-lille1.fr:7778/acc
