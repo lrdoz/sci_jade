@@ -1,4 +1,4 @@
-package fil.sci.yellowPage;
+package fil.sci.yellowpage;
 
 import jade.core.Agent;
 import jade.domain.DFService;

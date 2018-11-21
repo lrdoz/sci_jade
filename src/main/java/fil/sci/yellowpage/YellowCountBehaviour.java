@@ -1,4 +1,4 @@
-package fil.sci.yellowPage;
+package fil.sci.yellowpage;
 
 import java.util.List;
 import java.util.Random;
@@ -9,7 +9,7 @@ import jade.lang.acl.ACLMessage;
 import jade.util.Logger;
 
 /**
- * Définit un comportement pour l'agent bob
+ * Définit un comportement pour l'agent page jaune
  * 
  * @author SAUVAGE Celestine - HALABI Sami
  */
@@ -37,8 +37,9 @@ public class YellowCountBehaviour extends Behaviour{
 	private boolean done;
 	
 	//Constructor 
-	public YellowCountBehaviour(List<AID> friends){
+	public YellowCountBehaviour(List<AID> friends, int timer){
 		this.friends = friends;
+		this.initTimer = timer;
 		this.done = false;
 	}
 	
@@ -48,8 +49,7 @@ public class YellowCountBehaviour extends Behaviour{
 	@Override
 	public void action() {
 		ACLMessage message = this.myAgent.receive();
-		int performative = message.getPerformative();
-		if(message != null && ACLMessage.INFORM == performative) {
+		if(message != null && ACLMessage.INFORM == message.getPerformative()) {			
 			try{
 				int value = Integer.parseInt(message.getContent());
 				if(value != 0){
@@ -68,10 +68,12 @@ public class YellowCountBehaviour extends Behaviour{
 				logger.log(Logger.WARNING,String.format("[Agent][%s] Le message n'est pas une bombe", this.myAgent.getName()));
 		    }
 		}
-		else if(ACLMessage.FAILURE == performative){
+		else if(message != null && ACLMessage.FAILURE == message.getPerformative()){
 			this.friends.remove(message.getSender());
+			logger.log(Logger.WARNING,String.format("[Agent][%s] L'agent %s est mort :'( RIP", this.myAgent.getName(), message.getSender().toString()));
+
 		}
-		else{
+		else if (message != null){
 			logger.log(Logger.WARNING,String.format("[Agent][%s] Le message n'est pas une initialisation", this.myAgent.getName()));
 		}
 	}

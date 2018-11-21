@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fil.sci.yellowPage;
+package fil.sci.yellowpage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import jade.lang.acl.ACLMessage;
 import jade.util.Logger;
 
 /**
- * Définit un comportement pour l'agent bob
+ * Définit un comportement pour l'agent page jaune
  * 
  * @author SAUVAGE Celestine - HALABI Sami
  */
@@ -47,8 +47,13 @@ public class InitCountBehaviour extends Behaviour {
 	@Override
 	public void action() {
 		ACLMessage message = this.myAgent.receive();
+		
+		String name = this.myAgent.getName();
+		
 		if(message != null && ACLMessage.PROPOSE == message.getPerformative()) {
-			logger.log(Logger.INFO,String.format("[Agent][%s] Initialisation de la bombe !!!", this.myAgent.getName()));
+			logger.log(Logger.INFO,String.format("[Agent][%s] Initialisation de la bombe !!!", name));
+			
+			int value = Integer.parseInt(message.getContent());
 			
 			//Récupération de des amies
 			DFAgentDescription template = new DFAgentDescription();
@@ -57,20 +62,22 @@ public class InitCountBehaviour extends Behaviour {
 			try {
 				DFAgentDescription[] result = DFService.search(this.myAgent, template);
 				
-				List<AID> friends = new ArrayList<AID>();
-				for (int i = 0; i < result.length; ++i)
-					friends.add(result[i].getName());
+				List<AID> friends = new ArrayList<>();
+				for (DFAgentDescription df : result) {
+					if(! df.getName().equals(this.myAgent.getAID()))
+						friends.add(df.getName());
+				}
 				
-				this.myAgent.addBehaviour(new YellowCountBehaviour(friends));
+				this.myAgent.addBehaviour(new YellowCountBehaviour(friends, value));
 				this.done = true;
 			}
-			catch (FIPAException fe) {
-				logger.log(Logger.WARNING,String.format("[Agent][%s] Pas d'amis trouvé", this.myAgent.getName()));
+			catch (FIPAException | NumberFormatException fe) {
+				logger.log(Logger.WARNING,String.format("[Agent][%s] Pas d'amis trouvé", name));
 				return;
 			}
 		}
-		else{
-			logger.log(Logger.WARNING,String.format("[Agent][%s] Le message n'est pas une initialisation", this.myAgent.getName()));
+		else if(message != null){
+			logger.log(Logger.WARNING,String.format("[Agent][%s] Le message n'est pas une initialisation", name));
 		}
 	}
 
